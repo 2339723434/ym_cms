@@ -134,3 +134,20 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# 忽略所有node_modules文件夹
+/node_modules
+
+# 忽略编译后的打包文件
+/dist
+
+# 忽略日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 忽略IDE和系统文件
+.vscode
+.idea
+.DS_Store
