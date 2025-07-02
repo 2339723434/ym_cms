@@ -19,19 +19,6 @@
 
 > 本分支是基于 `vue-cli@5.0.8` 脚手架来进行构建的，使用 `vue@2.7.16` 和 `Element-UI@2.15.14` 来进行开发的。
 
-## 预览
-
-在线体验：[https://neveryu.github.io/vue-cms/](https://neveryu.github.io/vue-cms/)
-
-## 简介
-
-`vue-cms` 是一个企业级管理后台项目，基于 `Vue` 和 `ElementUI` 构建。它使用了最新的前端技术栈，内置了 `i18n` 国际化解决方案，支持多语言，路由嵌套，动态路由，权限验证等很多功能特性。
-
-同时，它也提供了首页的数据图表展示，个人中心，主题换肤，表单表格，数据统计等常用的页面模块；
-而且拥有完美的 `axios`，`api`，数据存储解决方案以及辅助函数的封装，开箱即用，可以帮助你快速搭建企业后台管理系统。
-
-与此同时，它也是一个很好的学习项目，包含了一些常见问题的解决方案，比如：数据可视化，导入导出功能，自定义组件，自定义指令，富文本；也包含了技术上的一些尝试，比如：基于 `element-ui` 的二次封装，`Decorator` 的使用...
-
 ## 写在前面
 
 请确保你安装了 [node](https://nodejs.org/en/) 和 [git](https://git-scm.com/)，与此同时，你应该对 [Vue](https://cn.vuejs.org/v2/guide/)、[Vuex](https://vuex.vuejs.org/zh/)、[Vue Router](https://router.vuejs.org/zh/)、[ES2015+](http://es6.ruanyifeng.com/)、[ElementUI](http://element-cn.eleme.io/#/zh-CN) 有所了解。我们的请求有使用 [Mock.js](https://github.com/nuysoft/Mock/wiki/Getting-Started) 模拟，也有使用线上真实的接口数据，提前了解和学习这些知识会对使用本项目有很大的帮助。
@@ -39,9 +26,6 @@
 ## Build Setup
 
 ```bash
-# 克隆项目
-git clone https://github.com/Neveryu/vue-cms.git
-
 # 进入项目
 cd vue-cms
 
@@ -52,11 +36,11 @@ yarn install --ignore-engines
 # 建议不要用 cnpm 安装 会有各种诡异的bug 可以通过如下操作解决 npm 下载速度慢的问题
 npm install --registry=https://registry.npmmirror.com/
 
-# serve with hot reload at localhost:8080
+# serve with hot reload at localhost:8888
 npm start
 ```
 
-浏览器访问 [http://localhost:8080](http://localhost:8080)
+浏览器访问 [http://localhost:8080](http://localhost:8888)
 
 ## 构建发布
 
@@ -130,23 +114,6 @@ vue-cms/  项目名称
 |-- README.md            #项目的说明文件
 |-- vue.config.js        #Vue CLI 配置文件，比如配置alias、devServer和configure Webpack等
 ```
-
-## 截图
-
-![](./resource/screenhot3.png)
-![](./resource/screenhot1.png)
-![](./resource/screenhot2.png)
-![](./resource/screenhot4.png)
-
-## Online Demo
-
-[点击即在线体验项目：https://neveryu.github.io/vue-cms/](https://neveryu.github.io/vue-cms/)
-
-## Donate
-
-如果你觉得这个项目帮助到了你，你可以帮作者买一杯果汁表示鼓励 :tropical_drink:
-
-<img src="https://neveryu.github.io/reward/wechat-alipay.png" alt="donate" width="650">
 
 ## Browsers support
 
