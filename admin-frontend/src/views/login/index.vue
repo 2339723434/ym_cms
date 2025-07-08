@@ -9,7 +9,8 @@
       </div>
       <el-form :rules="rules" :model="loginForm" ref="loginForm" label-width="80px">
         <el-form-item :label="$t('login.account')" prop="username" style="position: relative">
-          <el-input type="text" v-model.trim="loginForm.username" @keyup.enter.native="goToPwdInput" maxlength="20" clearable autocomplete="off">
+          <el-input type="text" v-model.trim="loginForm.username" @keyup.enter.native="goToPwdInput" maxlength="20"
+            clearable autocomplete="off">
             <template #prefix>
               <span class="svg-container svg-container_user">
                 <svg-icon icon-class="user" />
@@ -96,41 +97,42 @@ export default {
     goToPwdInput() {
       this.$refs.pwd.$el.getElementsByTagName('input')[0].focus()
     },
-    // 登录操作
+    // 登录操作 — 使用 Vuex action（内部调用云函数）
     onLogin() {
       this.$refs.pwd.$el.getElementsByTagName('input')[0].blur()
       this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          this.loading = true
-          this.login(this.loginForm)
-            .then(() => {
-              // 保存账号
-              if (this.remember) {
-                saveToLocal('username', this.loginForm.username)
-                saveToLocal('password', this.loginForm.pwd)
-                saveToLocal('remember', true)
-              } else {
-                saveToLocal('username', '')
-                saveToLocal('password', '')
-                saveToLocal('remember', false)
-              }
-              this.$router
-                .push({ path: '/' })
-                .then(() => {
-                  console.log('[登陆页面]登录成功，跳转... ')
-                })
-                .catch(() => {})
-            })
-            .catch((error) => {
-              // 接口错误信息会在封装的request.js中提示，所以这里就打印一下错误信息，便于调试。
-              console.log('[登陆页面]登录时的错误信息：', error)
-            })
-            .finally(() => {
-              this.loading = false
-            })
-        } else {
-          return false
-        }
+        if (!valid) return
+
+        this.loading = true
+
+        this.login(this.loginForm)
+          .then(() => {
+            // 账号记住功能
+            if (this.remember) {
+              saveToLocal('username', this.loginForm.username)
+              saveToLocal('password', this.loginForm.pwd)
+              saveToLocal('remember', true)
+            } else {
+              saveToLocal('username', '')
+              saveToLocal('password', '')
+              saveToLocal('remember', false)
+            }
+
+            // 跳转
+            this.$router
+              .push({ path: '/' })
+              .then(() => {
+                console.log('[登陆页面]登录成功，跳转... ')
+              })
+              .catch(() => { })
+          })
+          .catch((error) => {
+            console.warn('[登录] 失败：', error)
+            this.$message.error(error.message || '登录失败')
+          })
+          .finally(() => {
+            this.loading = false
+          })
       })
     },
     accountTip() {
@@ -156,6 +158,7 @@ export default {
 
 <style scoped lang="scss">
 @use 'sass:color';
+
 .login-container {
   display: block;
   position: absolute;
@@ -168,6 +171,7 @@ export default {
   background: color.mix(#044289, #494166) url('~@/assets/image/login-bg.svg') center no-repeat;
   background-size: cover;
   overflow: hidden;
+
   .show-account-info {
     position: absolute;
     left: 15px;
@@ -175,6 +179,7 @@ export default {
     color: var(--teal);
     font-weight: 500;
   }
+
   .el-card {
     position: absolute;
     top: 50%;
@@ -183,8 +188,10 @@ export default {
     width: 500px;
     height: 450px;
     background: #fff;
+
     .el-card-header {
       text-align: center;
+
       .lang-select {
         float: right;
       }
@@ -204,9 +211,11 @@ export default {
       top: 0;
       left: 4px;
       color: var(--gray);
+
       &_user {
         font-size: 20px;
       }
+
       &_password {
         font-size: 16px;
       }

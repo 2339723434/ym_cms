@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.10.1",
+    "tcb-js-sdk": "^1.10.10",
+    "tcb-router": "^1.1.2"
+  },
+  "name": "vue-cms",
+  "version": "1.0.0",
+  "description": "> 本分支是基于 `vue-cli@5.0.8` 脚手架来进行构建的，使用 `vue@2.7.16` 和 `Element-UI@2.15.14` 来进行开发的。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
