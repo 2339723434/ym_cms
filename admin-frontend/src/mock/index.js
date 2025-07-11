@@ -8,6 +8,7 @@ import * as homepageAPI from './homepage'
 import * as excel from './excel'
 import * as echarts from './echarts'
 import * as draggable from './draggable'
+import * as devices from './devices'
 
 Mock.setup({
   timeout: '300-600',
@@ -40,5 +41,9 @@ Mock.mock('/echarts/getDepartTop', 'post', echarts.getDepartTop)
 
 // 拖拽
 Mock.mock('/draggable/getFiles', 'post', draggable.getFileList)
+
+// 设备
+Mock.mock('/devices/list', 'post', devices.getDeviceList)
+Mock.mock('/devices/detail', 'post', devices.getDeviceDetail)
 
 export default Mock

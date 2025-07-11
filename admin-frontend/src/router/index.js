@@ -209,6 +209,29 @@ export const asyncRoutes = [
       },
     ],
   },
+  // 设备
+  {
+    path: '/devices',
+    component: MainLayout,
+    alwaysShow: true,
+    meta: { icon: 's-platform', title: '设备' },
+    redirect: 'index',
+    children: [
+      {
+        path: '/devices/index',
+        name: 'Devices',
+        meta: { icon: 's-platform', title: '设备列表' },
+        component: () => import('@/views/devices/index'),
+      },
+      {
+        path: '/devices/detail',
+        name: 'DeviceDetail',
+        hidden: true,
+        meta: { title: '设备详情', activeMenu: '/devices/index' },
+        component: () => import('@/views/devices/detail'),
+      },
+    ],
+  },
   // 简述
   {
     path: '/introduction',
@@ -263,28 +286,6 @@ export const asyncRoutes = [
         name: 'Menu2',
         meta: { icon: 'star-on', title: '嵌套路由2' },
         component: () => import('@/views/user/add'),
-      },
-    ],
-  },
-  // 富文本
-  {
-    path: '/rich-editor',
-    component: MainLayout,
-    alwaysShow: true,
-    meta: { icon: 's-order', title: '富文本' },
-    redirect: 'quill',
-    children: [
-      {
-        path: '/rich-editor/quill',
-        name: 'QuillEditor',
-        meta: { icon: 's-order', title: 'quill' },
-        component: () => import('@/views/rich-editor/quill'),
-      },
-      {
-        path: '/rich-editor/tinymce',
-        name: 'TinyMCE',
-        meta: { icon: 'svg-type', title: 'tinymce' },
-        component: () => import('@/views/rich-editor/tinymce'),
       },
     ],
   },
