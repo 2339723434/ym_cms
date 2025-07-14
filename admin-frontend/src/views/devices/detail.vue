@@ -50,11 +50,17 @@ export default {
          * 根据路由更新详情数据
          */
         async updateDetail(route) {
-            // 若 query 中已包含完整数据，直接使用
-            if (route.query && route.query.data) {
-                this.data = JSON.parse(route.query.data)
-            } else if (route.query && route.query.id) {
-                await this.fetchDetail(route.query.id)
+            if (route.query && route.query.id) {
+                const cached = this.$store.getters['device/getDeviceById'](route.query.id)
+                if (cached) {
+                    this.data = cached
+                } else {
+                    await this.fetchDetail(route.query.id)
+                    // 将新数据写入缓存
+                    if (this.data && this.data._id) {
+                        this.$store.dispatch('device/setDevice', this.data)
+                    }
+                }
             }
         },
     },
@@ -68,6 +74,11 @@ export default {
     },
     created() {
         this.updateDetail(this.$route)
+    },
+    watch: {
+        '$route.query.id': function () {
+            this.updateDetail(this.$route)
+        },
     },
 }
 </script>

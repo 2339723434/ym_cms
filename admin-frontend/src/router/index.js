@@ -227,7 +227,7 @@ export const asyncRoutes = [
         path: '/devices/detail',
         name: 'DeviceDetail',
         hidden: true,
-        meta: { title: '设备详情', activeMenu: '/devices/index' },
+        meta: { title: '设备详情', activeMenu: '/devices/index', hidden: true },
         component: () => import('@/views/devices/detail'),
       },
     ],

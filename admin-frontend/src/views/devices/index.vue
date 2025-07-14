@@ -50,7 +50,8 @@ export default {
             return date.toLocaleString()
         },
         goDetail(device) {
-            this.$router.push({ path: '/devices/detail', query: { id: device._id, data: JSON.stringify(device) } })
+            // 跳转时仅携带 id，设备数据写入 Vuex，详情页自行读取或请求
+            this.$router.push({ path: '/devices/detail', query: { id: device._id } })
         },
         async fetchDevices(page = 1) {
             this.loading = true
@@ -59,6 +60,8 @@ export default {
                 const { data } = resp
                 this.list = data.list || []
                 this.total = data.total || 0
+                // 缓存到 Vuex，供详情页读取
+                this.$store.dispatch('device/setDeviceList', this.list)
                 this.currentPage = page
             } catch (e) {
                 console.error(e)
