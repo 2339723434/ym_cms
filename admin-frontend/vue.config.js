@@ -56,12 +56,7 @@ module.exports = defineConfig({
         '@': resolve('src'),
       },
     },
-    plugins: [
-      new webpack.ProvidePlugin({
-        'window.Quill': 'quill/dist/quill.js',
-        Quill: 'quill/dist/quill.js',
-      }),
-    ],
+    plugins: [],
   },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload

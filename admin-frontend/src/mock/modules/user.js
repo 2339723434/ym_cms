@@ -118,18 +118,6 @@ const userMap = {
       },
       {
         type: 1,
-        address: '/rich-editor',
-      },
-      {
-        type: 2,
-        address: '/rich-editor/quill',
-      },
-      {
-        type: 2,
-        address: '/rich-editor/tinymce',
-      },
-      {
-        type: 1,
         address: '/theme',
       },
       {

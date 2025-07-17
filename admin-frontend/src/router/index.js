@@ -209,6 +209,29 @@ export const asyncRoutes = [
       },
     ],
   },
+  // 设备
+  {
+    path: '/devices',
+    component: MainLayout,
+    alwaysShow: true,
+    meta: { icon: 's-platform', title: '设备' },
+    redirect: 'index',
+    children: [
+      {
+        path: '/devices/index',
+        name: 'Devices',
+        meta: { icon: 's-platform', title: '设备列表' },
+        component: () => import('@/views/devices/index'),
+      },
+      {
+        path: '/devices/detail',
+        name: 'DeviceDetail',
+        hidden: true,
+        meta: { title: '设备详情', activeMenu: '/devices/index' },
+        component: () => import('@/views/devices/detail'),
+      },
+    ],
+  },
   // 简述
   {
     path: '/introduction',
@@ -266,28 +289,6 @@ export const asyncRoutes = [
       },
     ],
   },
-  // 富文本
-  {
-    path: '/rich-editor',
-    component: MainLayout,
-    alwaysShow: true,
-    meta: { icon: 's-order', title: '富文本' },
-    redirect: 'quill',
-    children: [
-      {
-        path: '/rich-editor/quill',
-        name: 'QuillEditor',
-        meta: { icon: 's-order', title: 'quill' },
-        component: () => import('@/views/rich-editor/quill'),
-      },
-      {
-        path: '/rich-editor/tinymce',
-        name: 'TinyMCE',
-        meta: { icon: 'svg-type', title: 'tinymce' },
-        component: () => import('@/views/rich-editor/tinymce'),
-      },
-    ],
-  },
   // 改变主题
   {
     path: '/theme',
@@ -316,6 +317,24 @@ export const asyncRoutes = [
         component: () => import('@/views/user/profile'),
       },
     ],
+  },
+
+  // 用户使用频率页面
+  {
+  path: '/usage',
+  component: MainLayout, 
+  alwaysShow: true,
+  children: [
+    {
+      path: '/usage/index',
+      name: 'Usage',
+      component: () => import('@/views/usage/index.vue'),
+      meta: { 
+        title: '用户使用频率', 
+        icon: 'el-icon-s-data' 
+      }
+    }
+  ]
   },
 ]
 
