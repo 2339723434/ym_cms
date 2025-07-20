@@ -318,6 +318,24 @@ export const asyncRoutes = [
       },
     ],
   },
+
+  // 用户使用频率页面
+  {
+  path: '/usage',
+  component: MainLayout, 
+  alwaysShow: true,
+  children: [
+    {
+      path: '/usage/index',
+      name: 'Usage',
+      component: () => import('@/views/usage/index.vue'),
+      meta: { 
+        title: '用户使用频率', 
+        icon: 'el-icon-s-data' 
+      }
+    }
+  ]
+  },
 ]
 
 const createRouter = () =>

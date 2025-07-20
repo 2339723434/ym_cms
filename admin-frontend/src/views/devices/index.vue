@@ -9,6 +9,7 @@
                     </div>
                     <div class="card-body">
                         <div class="device-name" :title="device.name">{{ device.name }}</div>
+                        <div class="device-mac">{{ device.mac_address }}</div>
                         <div class="device-mac">{{ formatMac(device.mac_address) }}</div>
                         <div class="device-created">注册：{{ formatDate(device.created_at) }}</div>
                         <div class="device-updated">更新：{{ formatDate(device.last_updated) }}</div>
@@ -50,6 +51,7 @@ export default {
             return date.toLocaleString()
         },
         goDetail(device) {
+            this.$router.push({ path: '/devices/detail', query: { id: device._id, data: JSON.stringify(device) } })
             // 跳转时仅携带 id，设备数据写入 Vuex，详情页自行读取或请求
             this.$router.push({ path: '/devices/detail', query: { id: device._id } })
         },

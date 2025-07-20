@@ -49,6 +49,7 @@ export function login(userInfo) {
             { address: '/user/info', type: 1, name: '用户信息' },
             { address: '/devices/index', type: 1, name: '设备' },
             { address: '/devices/detail', type: 1, name: '设备详情' },
+            { address: '/usage/index', type: 1, name: '用户使用频率'}
           ], // 权限列表后端暂未返回，可按需补充
           userInfo: userInfos,
         },

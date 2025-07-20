@@ -7,6 +7,14 @@ import app from '@/cloud'
  * @param {Number} limit 每页条数，默认30
  */
 export function getDeviceList(page = 1, limit = 30) {
+  return axios({
+    method: 'post',
+    url: '/devices/list',
+    data: {
+      page,
+      limit,
+    },
+  })
   return app
     .callFunction({
       name: 'getDeviceList',

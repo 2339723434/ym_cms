@@ -5,7 +5,7 @@
                 <span>设备详情</span>
                 <el-button style="float: right; padding: 3px 0" type="text" @click="$router.back()">返回</el-button>
             </div>
-            <el-descriptions :column="2" border>
+            <el-descriptions :column="2" :border="true">
                 <el-descriptions-item label="ID">{{ data._id }}</el-descriptions-item>
                 <el-descriptions-item label="名称">{{ data.name }}</el-descriptions-item>
                 <el-descriptions-item label="MAC 地址">{{ data.mac_address }}</el-descriptions-item>
@@ -50,36 +50,42 @@ export default {
          * 根据路由更新详情数据
          */
         async updateDetail(route) {
-            if (route.query && route.query.id) {
-                const cached = this.$store.getters['device/getDeviceById'](route.query.id)
-                if (cached) {
-                    this.data = cached
-                } else {
-                    await this.fetchDetail(route.query.id)
-                    // 将新数据写入缓存
-                    if (this.data && this.data._id) {
-                        this.$store.dispatch('device/setDevice', this.data)
+            // 若 query 中已包含完整数据，直接使用
+            if (route.query && route.query.data) {
+                this.data = JSON.parse(route.query.data)
+            } else if (route.query && route.query.id) {
+                await this.fetchDetail(route.query.id)
+                if (route.query && route.query.id) {
+                    const cached = this.$store.getters['device/getDeviceById'](route.query.id)
+                    if (cached) {
+                        this.data = cached
+                    } else {
+                        await this.fetchDetail(route.query.id)
+                        // 将新数据写入缓存
+                        if (this.data && this.data._id) {
+                            this.$store.dispatch('device/setDevice', this.data)
+                        }
                     }
                 }
             }
         },
-    },
-    /**
-     * 当路由 query 改变（点击列表其他设备，路径相同但参数不同）时，组件实例会复用，
-     * created 钩子不会再次触发，需要在 beforeRouteUpdate 中手动处理。
-     */
-    beforeRouteUpdate(to, from, next) {
-        this.updateDetail(to)
-        next()
-    },
-    created() {
-        this.updateDetail(this.$route)
-    },
-    watch: {
-        '$route.query.id': function () {
+        /**
+         * 当路由 query 改变（点击列表其他设备，路径相同但参数不同）时，组件实例会复用，
+         * created 钩子不会再次触发，需要在 beforeRouteUpdate 中手动处理。
+         */
+        beforeRouteUpdate(to, from, next) {
+            this.updateDetail(to)
+            next()
+        },
+        created() {
             this.updateDetail(this.$route)
         },
-    },
+        watch: {
+            '$route.query.id': function () {
+                this.updateDetail(this.$route)
+            },
+        },
+    }
 }
 </script>
 
