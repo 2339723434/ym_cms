@@ -10,6 +10,7 @@
                     <div class="card-body">
                         <div class="device-name" :title="device.name">{{ device.name }}</div>
                         <div class="device-mac">{{ device.mac_address }}</div>
+                        <div class="device-mac">{{ formatMac(device.mac_address) }}</div>
                         <div class="device-created">注册：{{ formatDate(device.created_at) }}</div>
                         <div class="device-updated">更新：{{ formatDate(device.last_updated) }}</div>
                         <div class="device-records">记录数：{{ device.total_records }}</div>
@@ -51,6 +52,17 @@ export default {
         },
         goDetail(device) {
             this.$router.push({ path: '/devices/detail', query: { id: device._id, data: JSON.stringify(device) } })
+            // 跳转时仅携带 id，设备数据写入 Vuex，详情页自行读取或请求
+            this.$router.push({ path: '/devices/detail', query: { id: device._id } })
+        },
+        formatMac(mac) {
+            if (!mac) return '--'
+            // 移除非十六进制字符
+            const hex = mac.replace(/[^a-fA-F0-9]/g, '')
+            // 取后 12 位，不足左补 0
+            const twelve = hex.slice(-12).padStart(12, '0')
+            // 转为大写并按两位分组
+            return twelve.toUpperCase().match(/.{2}/g).join(':')
         },
         async fetchDevices(page = 1) {
             this.loading = true
@@ -59,6 +71,8 @@ export default {
                 const { data } = resp
                 this.list = data.list || []
                 this.total = data.total || 0
+                // 缓存到 Vuex，供详情页读取
+                this.$store.dispatch('device/setDeviceList', this.list)
                 this.currentPage = page
             } catch (e) {
                 console.error(e)

@@ -20,17 +20,16 @@
         </template>
 
         <template v-for="child of item.children">
-          <sidebar-item
-            v-if="!child.hidden && child.children && child.children.length > 0"
-            :item="child"
-            :base-path="resolvePath(child.path)"
-            :key="child.path + '-item'" />
-          <!-- 虽然 child.path 本身可能是唯一的，但 Vue 要求相邻的条件分支必须使用完全不同的 key，即使它们位于 v-for 循环中 -->
-          <router-link v-else :to="resolvePath(child.path)" :key="child.path + '-link'">
-            <el-menu-item :index="child.path">
-              <item :icon="child.meta.icon" :title="child.meta.title"></item>
-            </el-menu-item>
-          </router-link>
+          <!-- 跳过隐藏路由 -->
+          <template v-if="!child.hidden">
+            <sidebar-item v-if="child.children && child.children.length > 0" :item="child"
+              :base-path="resolvePath(child.path)" :key="child.path + '-item'" />
+            <router-link v-else :to="resolvePath(child.path)" :key="child.path + '-link'">
+              <el-menu-item :index="child.path">
+                <item :icon="child.meta.icon" :title="child.meta.title"></item>
+              </el-menu-item>
+            </router-link>
+          </template>
         </template>
       </el-submenu>
     </template>
@@ -104,6 +103,6 @@ export default {
   created() {
     // console.log(this.basePath)
   },
-  mounted() {},
+  mounted() { },
 }
 </script>
