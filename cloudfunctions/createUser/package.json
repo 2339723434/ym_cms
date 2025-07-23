@@ -1,0 +1,15 @@
+{
+  "name": "createUser",
+  "version": "1.0.0",
+  "description": "创建新用户并加密密码",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@cloudbase/node-sdk": "^3.10.1",
+    "bcryptjs": "^2.4.3"
+  }
+}
