@@ -7,14 +7,6 @@ import app from '@/cloud'
  * @param {Number} limit 每页条数，默认30
  */
 export function getDeviceList(page = 1, limit = 30) {
-  return axios({
-    method: 'post',
-    url: '/devices/list',
-    data: {
-      page,
-      limit,
-    },
-  })
   return app
     .callFunction({
       name: 'getDeviceList',
@@ -51,5 +43,25 @@ export function getDeviceDetail(id) {
     data: {
       id,
     },
+  })
+}
+
+/**
+ * 调用云函数 getUserUsage，同步设备使用次数并返回最新设备列表
+ */
+export function updateDeviceUsage() {
+  return app.callFunction({ name: 'getUserUsage' })
+}
+
+/**
+ * 获取设备按日期的各项统计数据
+ * @param {String} id 设备ID
+ * 预期后端返回格式： { data: [ { date:'YYYY-MM-DD', pause:0, shallow:0, snore:0, hypopnea:0, deep:0 } ] }
+ */
+// 调用云函数获取睡眠报告（日期统计）
+export function getDeviceSleepReport(id) {
+  return app.callFunction({
+    name: 'getSleepReport',
+    data: { deviceId: id },
   })
 }

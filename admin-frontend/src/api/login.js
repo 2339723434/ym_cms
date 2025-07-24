@@ -47,9 +47,11 @@ export function login(userInfo) {
             { address: '/theme/index', type: 1, name: '主题' },
             { address: '/user/index', type: 1, name: '用户' },
             { address: '/user/info', type: 1, name: '用户信息' },
+            { address: '/user/profile', type: 1, name: '个人中心' },
+            { address: '/user', type: 1, name: '用户' },
             { address: '/devices/index', type: 1, name: '设备' },
             { address: '/devices/detail', type: 1, name: '设备详情' },
-            { address: '/usage/index', type: 1, name: '用户使用频率'}
+            { address: '/users/manage', type: 1, name: '用户管理' },
           ], // 权限列表后端暂未返回，可按需补充
           userInfo: userInfos,
         },

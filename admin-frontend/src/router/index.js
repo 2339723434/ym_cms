@@ -72,30 +72,6 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     meta: { title: '登录' },
   },
-
-  // 用户-个人中心
-  {
-    path: '/user',
-    redirect: '/user/profile',
-    alwaysShow: true,
-    name: 'UserCenter',
-    meta: { icon: 'tickets', title: '个人中心' },
-    component: MainLayout,
-    children: [
-      {
-        path: '/user/profile',
-        name: 'Profile',
-        meta: { title: '基本资料' },
-        component: () => import('@/views/user/profile'),
-      },
-      {
-        path: '/user/management',
-        name: 'UserManagement',
-        component: () => import('@/views/user/management'),
-        meta: { title: '用户管理' }
-      },
-    ],
-  },
 ]
 
 /**
@@ -327,24 +303,34 @@ export const asyncRoutes = [
       },
     ],
   },
-
-
-  // 用户使用频率页面
+  // 用户-个人中心
   {
-  path: '/usage',
-  component: MainLayout, 
-  alwaysShow: true,
-  children: [
-    {
-      path: '/usage/index',
-      name: 'Usage',
-      component: () => import('@/views/usage/index.vue'),
-      meta: { 
-        title: '用户使用频率', 
-        icon: 'el-icon-s-data' 
-      }
-    }
-  ]
+    path: '/user',
+    hidden: true,
+    meta: { icon: 'tickets', title: '个人中心' },
+    component: MainLayout,
+    children: [
+      {
+        path: '/user/profile',
+        name: 'Profile',
+        meta: { icon: 'warning', title: '个人中心' },
+        component: () => import('@/views/user/profile'),
+      },
+    ],
+  },
+  // 用户管理
+  {
+    path: '/users',
+    component: MainLayout,
+    meta: { icon: 'user', title: '用户管理' },
+    children: [
+      {
+        path: '/users/manage',
+        name: 'UserManage',
+        meta: { icon: 'user', title: '用户管理' },
+        component: () => import('@/views/users/manage'),
+      },
+    ],
   },
 ]
 
