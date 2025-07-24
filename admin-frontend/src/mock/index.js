@@ -9,6 +9,8 @@ import * as excel from './excel'
 import * as echarts from './echarts'
 import * as draggable from './draggable'
 import * as devices from './devices'
+import * as deviceDate from './deviceDate'
+import * as users from './users'
 
 Mock.setup({
   timeout: '300-600',
@@ -45,5 +47,9 @@ Mock.mock('/draggable/getFiles', 'post', draggable.getFileList)
 // 设备
 Mock.mock('/devices/list', 'post', devices.getDeviceList)
 Mock.mock('/devices/detail', 'post', devices.getDeviceDetail)
+// date data
+Mock.mock('/devices/dateData', 'post', deviceDate.getDeviceDateData)
+Mock.mock('/users/list', 'post', users.getUserList)
+Mock.mock('/users/create', 'post', users.createUser)
 
 export default Mock
