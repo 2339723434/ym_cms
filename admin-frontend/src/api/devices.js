@@ -65,3 +65,23 @@ export function getDeviceSleepReport(id) {
     data: { deviceId: id },
   })
 }
+
+export function getAllDeviceData(page = 1, limit = 20, mac_address = '', date = '') {
+  return app
+    .callFunction({
+      name: 'getAllDeviceData',
+      data: { page, limit, mac_address, date },
+    })
+    .then((res) => {
+      const { result } = res || {}
+      if (!result || result.code !== 0) {
+        console.error('getAllDeviceData error:', result?.error)
+        return Promise.reject(new Error(result?.error || '获取失败'))
+      }
+      return { data: result.data || [], total: result.total || 0 }
+    })
+    .catch((err) => {
+      console.error('Cloud function call failed:', err)
+      return Promise.reject(err)
+    })
+}

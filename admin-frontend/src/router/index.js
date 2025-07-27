@@ -224,6 +224,12 @@ export const asyncRoutes = [
         component: () => import('@/views/devices/index'),
       },
       {
+        path: '/devices/all-data',
+        name: 'AllDeviceData',
+        meta: { icon: 's-data', title: '设备数据' },
+        component: () => import('@/views/devices/all-data'),
+      },
+      {
         path: '/devices/detail',
         name: 'DeviceDetail',
         hidden: true,

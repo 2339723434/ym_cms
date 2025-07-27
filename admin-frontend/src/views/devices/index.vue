@@ -2,8 +2,10 @@
     <div class="devices-wrapper">
         <!-- 全屏加载遮罩 -->
         <div class="loading-mask" v-if="loading">
-            <i class="el-icon-loading loading-icon"></i>
-            <span class="loading-text">加载中...</span>
+            <div class="loading-content">
+                <i class="el-icon-loading loading-icon"></i>
+                <span class="loading-text">加载中，请稍候...</span>
+            </div>
         </div>
         <el-row class="content my_scrollbar" gutter="30" v-show="!loading">
             <el-col v-for="(device, index) in pagedDevices" :key="device._id" :xs="12" :sm="8" :md="6" :lg="4" :xl="4"
@@ -90,6 +92,39 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100%;
+}
+
+.loading-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.loading-icon {
+    font-size: 32px;
+    color: #409EFF;
+}
+
+.loading-text {
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #303133;
 }
 
 .content {
@@ -182,26 +217,3 @@ export default {
     transition: background-color 0.3s;
 }
 </style>
-
-.loading-mask {
-position: absolute;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-background: rgba(255,255,255,0.8);
-z-index: 2000;
-}
-.loading-icon {
-font-size: 32px;
-color: #409eff;
-}
-.loading-text {
-margin-top: 8px;
-font-size: 14px;
-color: #606266;
-}

@@ -51,6 +51,7 @@ export function login(userInfo) {
             { address: '/user', type: 1, name: '用户' },
             { address: '/devices/index', type: 1, name: '设备' },
             { address: '/devices/detail', type: 1, name: '设备详情' },
+            { address: '/devices/all-data', type: 1, name: '设备数据' },
             { address: '/users/manage', type: 1, name: '用户管理' },
           ], // 权限列表后端暂未返回，可按需补充
           userInfo: userInfos,

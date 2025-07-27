@@ -19,13 +19,16 @@
             </div>
 
             <!-- 创建用户对话框 -->
-            <el-dialog title="创建用户" :visible.sync="showCreate" width="400px">
-                <el-form :model="createForm" :rules="createRules" ref="createForm" label-width="90px">
+            <el-dialog title="创建用户" :visible.sync="showCreate" width="600px" class="create-dialog">
+                <el-form :model="createForm" :rules="createRules" ref="createForm" label-width="120px">
                     <el-form-item label="账号" prop="account">
-                        <el-input v-model="createForm.account" />
+                        <el-input v-model="createForm.account" placeholder="请输入唯一账号" />
                     </el-form-item>
                     <el-form-item label="密码" prop="password">
-                        <el-input v-model="createForm.password" type="password" />
+                        <el-input v-model="createForm.password" type="password" placeholder="至少8位，包含字母和数字" />
+                    </el-form-item>
+                    <el-form-item label="确认密码" prop="confirmPassword">
+                        <el-input v-model="createForm.confirmPassword" type="password" placeholder="确认密码" />
                     </el-form-item>
                     <el-form-item label="角色" prop="role">
                         <el-select v-model="createForm.role" placeholder="请选择角色">
@@ -64,18 +67,49 @@
     </div>
 </template>
 <script>
-import { getUserList } from '@/api/user'
+import { getUserList, registerUser } from '@/api/user'
 export default {
     name: 'UserManage',
     data() {
+        const validatePass = (rule, value, callback) => {
+            if (value !== this.createForm.password) {
+                callback(new Error('两次输入密码不一致'));
+            } else {
+                callback();
+            }
+        };
+        const validateUsername = (rule, value, callback) => {
+            if (!value) {
+                callback(new Error('请输入账号'));
+            } else {
+                this.checkUserExists(value).then(res => {
+                    if (res.exists) {
+                        callback(new Error('账号已存在'));
+                    } else {
+                        callback();
+                    }
+                }).catch(() => callback(new Error('检查账号失败')));
+            }
+        };
         return {
             list: [], total: 0, page: 1, pageSize: 20, loading: false,
             query: { account: '', role: '', region: '' }, roles: ['admin', 'editor', 'viewer'], regions: ['华东', '华南', '华北', '西南', '海外'],
             showCreate: false,
-            createForm: { account: '', password: '', role: '', region: '' },
+            createForm: { username: '', password: '', confirmPassword: '', role: '', region: '' },
             createRules: {
-                account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
-                password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+                username: [
+                    { required: true, validator: validateUsername, trigger: 'blur' },
+                    { min: 3, max: 20, message: '账号长度在3-20位', trigger: 'blur' }
+                ],
+                password: [
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { min: 8, message: '密码至少8位', trigger: 'blur' },
+                    { pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, message: '密码必须包含字母和数字', trigger: 'blur' }
+                ],
+                confirmPassword: [
+                    { required: true, message: '请确认密码', trigger: 'blur' },
+                    { validator: validatePass, trigger: 'blur' }
+                ],
                 role: [{ required: true, message: '请选择角色', trigger: 'change' }],
                 region: [{ required: true, message: '请选择区域', trigger: 'change' }],
             }
@@ -112,17 +146,22 @@ export default {
             this.$refs.createForm.validate(async (valid) => {
                 if (!valid) return
                 try {
-                    await this.$loading({ lock: true }).close
-                } catch (e) { }
-                try {
-                    await this.$loading({ lock: true })
-                    await (await import('@/api/user')).createUser(this.createForm)
+                    const resp = await registerUser(this.createForm)
                     this.$message.success('创建成功')
                     this.showCreate = false
-                    this.createForm = { account: '', password: '', role: '', region: '' }
+                    this.createForm = { account: '', password: '', confirmPassword: '', role: '', region: '' }
                     this.loadData(1)
-                } catch (e) { this.$message.error('创建失败') }
+                } catch (e) {
+                    this.$message.error('创建失败: ' + e.message)
+                }
             })
+        },
+        async checkUserExists(username) {
+            // 实际API调用，例如：
+            // const res = await checkUsernameAPI(username);
+            // return { exists: res.exists };
+            // 占位返回
+            return { exists: false };
         }
     },
     created() { this.loadData() }
@@ -147,5 +186,13 @@ export default {
 .el-table th,
 .el-table td {
     padding: 6px 10px;
+}
+
+.create-dialog .el-dialog__body {
+    padding: 20px 40px;
+}
+
+.create-dialog .el-form-item {
+    margin-bottom: 24px;
 }
 </style>

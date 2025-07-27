@@ -20,6 +20,24 @@
         <el-card class="box-card" style="margin-top:20px;">
             <div ref="chart" style="width:100%;height:400px;"></div>
         </el-card>
+        <!-- 导出表格 -->
+        <el-card class="box-card" style="margin-top:20px;">
+            <div class="table-toolbar">
+                <el-button type="success" size="small" icon="el-icon-download" @click="exportTable">导出表格</el-button>
+            </div>
+            <el-table :data="pagedList" style="width:100%" stripe>
+                <el-table-column prop="name" label="名称" width="150" />
+                <el-table-column prop="mac_address" label="MAC 地址" width="200" />
+                <el-table-column prop="date" label="日期" width="150" />
+                <el-table-column prop="pause" label="Pause" width="100" />
+                <el-table-column prop="shallow" label="Shallow" width="100" />
+                <el-table-column prop="snore" label="Snore" width="100" />
+                <el-table-column prop="hypopnea" label="Hypopnea" width="120" />
+                <el-table-column prop="tiny" label="Tiny" width="100" />
+            </el-table>
+            <el-pagination background layout="prev, pager, next" :page-size="pageSize" :current-page.sync="currentPage"
+                :total="total" @current-change="handlePageChange" style="text-align:right;margin-top:10px;" />
+        </el-card>
     </div>
 </template>
 
@@ -32,7 +50,19 @@ export default {
         return {
             data: {},
             loading: false,
+            dateList: [],  // 日期数据
+            currentPage: 1,
+            pageSize: 10,
         }
+    },
+    computed: {
+        pagedList() {
+            const start = (this.currentPage - 1) * this.pageSize
+            return this.dateList.slice(start, start + this.pageSize)
+        },
+        total() {
+            return this.dateList.length
+        },
     },
     methods: {
         formatDate(val) {
@@ -51,20 +81,45 @@ export default {
                 this.loading = false
             }
         },
-        async fetchChart(id){
-            try{
+        async fetchChart(id) {
+            try {
                 const resp = await getDeviceSleepReport(id)
                 const list = resp.result ? resp.result.data : resp.data
-                this.renderChart(list||[])
-            }catch(e){console.error(e)}
+                this.renderChart(list || [])
+            } catch (e) { console.error(e) }
         },
-        renderChart(list){
-            if(!this.$refs.chart) return
-            if(!this.chart){ this.chart = echarts.init(this.$refs.chart) }
-            const dates = list.map(i=>i.date)
-            const keys = ['pause','shallow','snore','hypopnea','tiny']
-            const series = keys.map(k=>({ name:k, type:'line', data:list.map(i=>i[k]||0) }))
-            this.chart.setOption({ tooltip:{trigger:'axis'}, legend:{data:keys}, xAxis:{type:'category', data:dates}, yAxis:{type:'value'}, series })
+        renderChart(list) {
+            const sortedList = list.sort((a, b) => new Date(b.date) - new Date(a.date))
+            this.dateList = sortedList.map(item => ({ ...item, name: this.data.name, mac_address: this.data.mac_address }))  // 保存列表供表格使用
+            if (sortedList.length > 0) {
+                this.data.last_record_date = sortedList[0].date
+            }
+            if (!this.$refs.chart) return
+            if (!this.chart) { this.chart = echarts.init(this.$refs.chart) }
+            const chartList = [...list].sort((a, b) => new Date(a.date) - new Date(b.date))
+            const dates = chartList.map(i => i.date)
+            const keys = ['pause', 'shallow', 'snore', 'hypopnea', 'tiny']
+            const series = keys.map(k => ({ name: k, type: 'line', data: chartList.map(i => i[k] || 0) }))
+            this.chart.setOption({ tooltip: { trigger: 'axis' }, legend: { data: keys }, xAxis: { type: 'category', data: dates }, yAxis: { type: 'value' }, series })
+        },
+        handlePageChange(page) {
+            this.currentPage = page
+        },
+        exportTable() {
+            import('@/vendor/Export2Excel').then(excel => {
+                const tHeader = ['名称', 'MAC 地址', '日期', 'Pause', 'Shallow', 'Snore', 'Hypopnea', 'Tiny']
+                const filterVal = ['name', 'mac_address', 'date', 'pause', 'shallow', 'snore', 'hypopnea', 'tiny']
+                const list = this.dateList
+                const data = this.formatJson(filterVal, list)
+                excel.export_json_to_excel({
+                    header: tHeader,
+                    data,
+                    filename: '设备日期数据'
+                })
+            })
+        },
+        formatJson(filterVal, jsonData) {
+            return jsonData.map(v => filterVal.map(j => v[j]))
         },
         /**
          * 根据路由更新详情数据
@@ -72,7 +127,7 @@ export default {
         async updateDetail(route) {
             if (route.query && route.query.id) {
                 const cached = this.$store.getters['device/getDeviceById'](route.query.id)
-                
+
                 if (cached) {
                     this.data = cached
                 } else {
@@ -98,9 +153,9 @@ export default {
     created() {
         this.updateDetail(this.$route)
     },
-    mounted(){
+    mounted() {
         // resize handler
-        window.addEventListener('resize', ()=>{ this.chart && this.chart.resize()})
+        window.addEventListener('resize', () => { this.chart && this.chart.resize() })
     },
     watch: {
         '$route.query.id': function () {
@@ -113,5 +168,10 @@ export default {
 <style scoped>
 .device-detail {
     padding: 20px;
+}
+
+.table-toolbar {
+    margin-bottom: 10px;
+    text-align: right;
 }
 </style>
