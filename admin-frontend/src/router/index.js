@@ -230,6 +230,12 @@ export const asyncRoutes = [
         component: () => import('@/views/devices/all-data'),
       },
       {
+        path: '/devices/import',
+        name: 'ImportDevices',
+        meta: { icon: 'upload', title: '导入设备' },
+        component: () => import('@/views/devices/import'),
+      },
+      {
         path: '/devices/detail',
         name: 'DeviceDetail',
         hidden: true,
@@ -324,17 +330,24 @@ export const asyncRoutes = [
       },
     ],
   },
-  // 用户管理
+  // 代理管理
   {
-    path: '/users',
+    path: '/agents',
     component: MainLayout,
-    meta: { icon: 'user', title: '用户管理' },
+    meta: { icon: 'user', title: '代理管理' },
     children: [
       {
-        path: '/users/manage',
-        name: 'UserManage',
-        meta: { icon: 'user', title: '用户管理' },
-        component: () => import('@/views/users/manage'),
+        path: '/agents/manage',
+        name: 'AgentManage',
+        meta: { icon: 'user', title: '代理管理' },
+        component: () => import('@/views/agents/manage'),
+      },
+      {
+        path: '/agents/detail',
+        name: 'AgentDetail',
+        hidden: true,
+        meta: { title: '代理详情', activeMenu: '/agents/manage', hidden: true },
+        component: () => import('@/views/agents/detail'),
       },
     ],
   },

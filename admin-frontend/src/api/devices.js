@@ -85,3 +85,53 @@ export function getAllDeviceData(page = 1, limit = 20, mac_address = '', date = 
       return Promise.reject(err)
     })
 }
+
+/**
+ * 导入设备数据
+ * @param {Array} devices 设备数据数组
+ * 预期格式： [{ regionId, agentName, contact, deviceName, macAddress }]
+ */
+export function importDevices(devices) {
+  return app
+    .callFunction({
+      name: 'importDevices',
+      data: { devices },
+    })
+    .then((res) => {
+      const { result } = res || {}
+      if (!result || result.code !== 0) {
+        console.error('importDevices error:', result?.error)
+        return Promise.reject(new Error(result?.error || '导入设备失败'))
+      }
+      return result
+    })
+    .catch((err) => {
+      console.error('Import devices cloud function call failed:', err)
+      return Promise.reject(err)
+    })
+}
+
+/**
+ * 导入代理数据
+ * @param {Array} agents 代理数据数组
+ * 预期格式： [{ regionId, agentName, contact }]
+ */
+export function importAgent(agents) {
+  return app
+    .callFunction({
+      name: 'importAgent',
+      data: { agents },
+    })
+    .then((res) => {
+      const { result } = res || {}
+      if (!result || result.code !== 0) {
+        console.error('importAgent error:', result?.error)
+        return Promise.reject(new Error(result?.error || '导入代理失败'))
+      }
+      return result
+    })
+    .catch((err) => {
+      console.error('Import agent cloud function call failed:', err)
+      return Promise.reject(err)
+    })
+}

@@ -24,6 +24,7 @@ pnpm-debug.log*
 node_modules/
 cloudfunctions
 cloudfunctions/*
+cloudbaserc.json
 
 # Logs
 logs

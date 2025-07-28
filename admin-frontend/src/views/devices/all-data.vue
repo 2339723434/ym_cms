@@ -15,7 +15,11 @@
                 </el-form-item>
             </el-form>
             <el-table :data="list" style="width:100%" stripe v-loading="loading" class="data-table">
-                <el-table-column prop="mac_address" label="MAC 地址" width="250" />
+                <el-table-column prop="mac_address" label="MAC 地址" width="280" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span class="mac-address">{{ scope.row.mac_address }}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="date" label="日期" width="180" />
                 <el-table-column prop="pause" label="Pause" width="150" />
                 <el-table-column prop="shallow" label="Shallow" width="150" />
@@ -101,5 +105,16 @@ export default {
 
 .data-table {
     margin-bottom: 20px;
+}
+
+.mac-address {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Courier New', Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.2;
+    display: inline-block;
+    max-width: 100%;
 }
 </style>

@@ -8,7 +8,9 @@
             <el-descriptions :column="2" border>
                 <el-descriptions-item label="ID">{{ data._id }}</el-descriptions-item>
                 <el-descriptions-item label="名称">{{ data.name }}</el-descriptions-item>
-                <el-descriptions-item label="MAC 地址">{{ data.mac_address }}</el-descriptions-item>
+                <el-descriptions-item label="MAC 地址">
+                    <span class="mac-address">{{ data.mac_address }}</span>
+                </el-descriptions-item>
                 <el-descriptions-item label="经纬度">{{ data.latitude }}, {{ data.longitude }}</el-descriptions-item>
                 <el-descriptions-item label="创建时间">{{ formatDate(data.created_at) }}</el-descriptions-item>
                 <el-descriptions-item label="最后更新">{{ formatDate(data.last_updated) }}</el-descriptions-item>
@@ -27,7 +29,11 @@
             </div>
             <el-table :data="pagedList" style="width:100%" stripe>
                 <el-table-column prop="name" label="名称" width="150" />
-                <el-table-column prop="mac_address" label="MAC 地址" width="200" />
+                <el-table-column prop="mac_address" label="MAC 地址" width="280" show-overflow-tooltip>
+                    <template slot-scope="scope">
+                        <span class="mac-address">{{ scope.row.mac_address }}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="date" label="日期" width="150" />
                 <el-table-column prop="pause" label="Pause" width="100" />
                 <el-table-column prop="shallow" label="Shallow" width="100" />
@@ -173,5 +179,16 @@ export default {
 .table-toolbar {
     margin-bottom: 10px;
     text-align: right;
+}
+
+.mac-address {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'Courier New', Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.2;
+    display: inline-block;
+    max-width: 100%;
 }
 </style>
