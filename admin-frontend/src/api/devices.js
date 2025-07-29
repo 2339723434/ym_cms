@@ -3,30 +3,37 @@ import app from '@/cloud'
 
 /**
  * 获取设备列表
- * @param {Number} page 当前页码 (从1开始)
+ * @param {Number|Object} page 当前页码或参数对象
  * @param {Number} limit 每页条数，默认30
+ * @param {String} searchQuery 搜索关键词
+ * @param {String} name 精确设备名
+ * @param {String} mac_address 精确MAC
  */
-export function getDeviceList(page = 1, limit = 30) {
+export function getDeviceList(page = 1, limit = 30, searchQuery = '', name = '', mac_address = '') {
+  // 兼容对象参数调用
+  let params = {}
+  if (typeof page === 'object') {
+    params = { ...page }
+    params.page = params.page || 1
+    params.limit = params.limit || 30
+  } else {
+    params = { page, limit, searchQuery, name, mac_address }
+  }
   return app
     .callFunction({
       name: 'getDeviceList',
+      data: params,
     })
     .then((res) => {
-      // 云函数返回格式： { code, message, data: [...] }
       const { result } = res || {}
       if (!result || result.code !== 0) {
         return Promise.reject(new Error(result?.message || '获取设备列表失败'))
       }
-
-      const allList = result.data || []
-      // 前端再次分页（云函数当前返回全部数据）
-      const start = (page - 1) * limit
-      const list = allList.slice(start, start + limit)
-
+      // result.data: { list, total }
       return {
         data: {
-          list,
-          total: allList.length,
+          list: result.data.list || [],
+          total: result.data.total || 0,
         },
       }
     })
@@ -37,13 +44,18 @@ export function getDeviceList(page = 1, limit = 30) {
  * @param {String} id 设备ID
  */
 export function getDeviceDetail(id) {
-  return axios({
-    method: 'post',
-    url: '/devices/detail',
-    data: {
-      id,
-    },
-  })
+  return app
+    .callFunction({
+      name: 'getDeviceDetail',
+      data: { deviceId: id },
+    })
+    .then((res) => {
+      const { result } = res || {}
+      if (!result || result.code !== 0) {
+        return Promise.reject(new Error(result?.message || '获取设备详情失败'))
+      }
+      return { data: result.data }
+    })
 }
 
 /**

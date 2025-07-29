@@ -60,9 +60,12 @@
 
         <!-- 分配设备对话框 -->
         <el-dialog title="分配设备" :visible.sync="showAddDevice" width="800px">
-            <el-input v-model="availableDeviceQuery" placeholder="搜索可分配的设备" clearable style="margin-bottom: 15px;"
-                prefix-icon="el-icon-search">
-            </el-input>
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <el-input v-model="availableDeviceQuery" placeholder="搜索可分配的设备" clearable style="width: 300px;"
+                    prefix-icon="el-icon-search" @keyup.enter.native="searchAvailableDevices"></el-input>
+                <el-button type="primary" @click="searchAvailableDevices" style="margin-left: 8px;">搜索</el-button>
+                <el-button @click="loadAvailableDevices" style="margin-left: 8px;">重置</el-button>
+            </div>
             <el-table :data="filteredAvailableDevices" style="width: 100%" @selection-change="handleSelectionChange"
                 max-height="400">
                 <el-table-column type="selection" width="55"></el-table-column>
@@ -92,7 +95,7 @@
 </template>
 
 <script>
-import { getAgentDetail, getAgentDevices, getAvailableDevices, assignDevicesToAgent, removeDeviceFromAgent } from '@/api/agent'
+import { getAgentDetail, getAgentDevices, getAvailableDevices, assignDevicesToAgent, removeDeviceFromAgent, getDeviceList } from '@/api/agent'
 import { chinaRegions } from '@/common/china-regions'
 
 export default {
@@ -156,27 +159,26 @@ export default {
 
         async loadAvailableDevices() {
             try {
-                const resp = await getAvailableDevices()
-                this.availableDevices = resp.data || []
+                const resp = await getDeviceList({ limit: 5 });
+                this.availableDevices = resp.data || [];
             } catch (error) {
-                console.error('加载可分配设备失败:', error)
-                // 模拟数据
-                this.availableDevices = [
-                    {
-                        id: 4,
-                        name: 'AC-Master-1',
-                        mac_address: 'F0:10:A5:72:91:3A',
-                        status: 'offline',
-                        total_records: 0
-                    },
-                    {
-                        id: 5,
-                        name: 'AC-Master-C31A',
-                        mac_address: 'C4:D3:6A:8B:C3:1A',
-                        status: 'online',
-                        total_records: 456
-                    }
-                ]
+                console.error('加载可分配设备失败:', error);
+                this.availableDevices = [];
+            }
+        },
+
+        async searchAvailableDevices() {
+            try {
+                const query = this.availableDeviceQuery.trim();
+                let params = { limit: 5 };
+                if (query) {
+                    params.searchQuery = query;
+                }
+                const resp = await getDeviceList(params);
+                this.availableDevices = (resp.data && resp.data.list) ? resp.data.list : (resp.data || []);
+            } catch (error) {
+                this.availableDevices = [];
+                this.$message.error('搜索失败: ' + error.message);
             }
         },
 
@@ -203,9 +205,11 @@ export default {
         },
 
         viewDevice(device) {
+            // 通过路由params传递完整的设备对象
             this.$router.push({
-                path: '/devices/detail',
-                query: { id: device.id }
+                name: 'DeviceDetail',
+                params: { deviceData: device },
+                query: { id: device._id || device.id }
             })
         },
 

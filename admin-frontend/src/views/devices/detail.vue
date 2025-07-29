@@ -131,6 +131,15 @@ export default {
          * 根据路由更新详情数据
          */
         async updateDetail(route) {
+            // 优先使用路由params传递的设备对象
+            if (route.params && route.params.deviceData) {
+                this.data = route.params.deviceData
+                // 获取图表数据
+                this.fetchChart(this.data._id || this.data.id)
+                return
+            }
+
+            // 如果没有传递设备对象，则通过ID查询
             if (route.query && route.query.id) {
                 const cached = this.$store.getters['device/getDeviceById'](route.query.id)
 
@@ -149,7 +158,7 @@ export default {
         },
     },
     /**
-     * 当路由 query 改变（点击列表其他设备，路径相同但参数不同）时，组件实例会复用，
+     * 当路由 query 或 params 改变时，组件实例会复用，
      * created 钩子不会再次触发，需要在 beforeRouteUpdate 中手动处理。
      */
     beforeRouteUpdate(to, from, next) {
@@ -165,6 +174,9 @@ export default {
     },
     watch: {
         '$route.query.id': function () {
+            this.updateDetail(this.$route)
+        },
+        '$route.params': function () {
             this.updateDetail(this.$route)
         },
     },

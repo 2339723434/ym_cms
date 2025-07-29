@@ -75,19 +75,19 @@ export function getAgentDevices(agentId) {
 /**
  * 获取可分配的设备列表
  */
-export function getAvailableDevices() {
-  return app
-    .callFunction({
-      name: 'getAvailableDevices',
-    })
-    .then((res) => {
-      const { result } = res || {}
-      if (!result || result.code !== 0) {
-        return Promise.reject(new Error(result?.message || '获取可分配设备失败'))
-      }
-      return { data: result.data }
-    })
-}
+// export function getAvailableDevices() {
+//   return app
+//     .callFunction({
+//       name: 'getAvailableDevices',
+//     })
+//     .then((res) => {
+//       const { result } = res || {}
+//       if (!result || result.code !== 0) {
+//         return Promise.reject(new Error(result?.message || '获取可分配设备失败'))
+//       }
+//       return { data: result.data }
+//     })
+// }
 
 /**
  * 创建代理账户
@@ -132,76 +132,100 @@ export function registerAgent(agentData) {
  * @param {String} agentId 代理ID
  * @param {Array} deviceIds 设备ID数组
  */
-export function assignDevicesToAgent(agentId, deviceIds) {
-  return app
-    .callFunction({
-      name: 'assignDevicesToAgent',
-      data: { agentId, deviceIds },
-    })
-    .then((res) => {
-      const { result } = res || {}
-      if (!result || result.code !== 0) {
-        return Promise.reject(new Error(result?.message || '分配设备失败'))
-      }
-      return { data: result.data }
-    })
-}
+// export function assignDevicesToAgent(agentId, deviceIds) {
+//   return app
+//     .callFunction({
+//       name: 'assignDevicesToAgent',
+//       data: { agentId, deviceIds },
+//     })
+//     .then((res) => {
+//       const { result } = res || {}
+//       if (!result || result.code !== 0) {
+//         return Promise.reject(new Error(result?.message || '分配设备失败'))
+//       }
+//       return { data: result.data }
+//     })
+// }
 
 /**
  * 从代理移除设备
  * @param {String} agentId 代理ID
  * @param {String} deviceId 设备ID
  */
-export function removeDeviceFromAgent(agentId, deviceId) {
-  return app
-    .callFunction({
-      name: 'removeDeviceFromAgent',
-      data: { agentId, deviceId },
-    })
-    .then((res) => {
-      const { result } = res || {}
-      if (!result || result.code !== 0) {
-        return Promise.reject(new Error(result?.message || '移除设备失败'))
-      }
-      return { data: result.data }
-    })
-}
+// export function removeDeviceFromAgent(agentId, deviceId) {
+//   return app
+//     .callFunction({
+//       name: 'removeDeviceFromAgent',
+//       data: { agentId, deviceId },
+//     })
+//     .then((res) => {
+//       const { result } = res || {}
+//       if (!result || result.code !== 0) {
+//         return Promise.reject(new Error(result?.message || '移除设备失败'))
+//       }
+//       return { data: result.data }
+//     })
+// }
 
 /**
  * 更新代理信息
  * @param {String} agentId 代理ID
  * @param {Object} agentData 更新的代理数据
  */
-export function updateAgent(agentId, agentData) {
-  return app
-    .callFunction({
-      name: 'updateAgent',
-      data: { agentId, ...agentData },
-    })
-    .then((res) => {
-      const { result } = res || {}
-      if (!result || result.code !== 0) {
-        return Promise.reject(new Error(result?.message || '更新代理失败'))
-      }
-      return { data: result.data }
-    })
-}
+// export function updateAgent(agentId, agentData) {
+//   return app
+//     .callFunction({
+//       name: 'updateAgent',
+//       data: { agentId, ...agentData },
+//     })
+//     .then((res) => {
+//       const { result } = res || {}
+//       if (!result || result.code !== 0) {
+//         return Promise.reject(new Error(result?.message || '更新代理失败'))
+//       }
+//       return { data: result.data }
+//     })
+// }
 
 /**
  * 删除代理
  * @param {String} agentId 代理ID
  */
-export function deleteAgent(agentId) {
+// export function deleteAgent(agentId) {
+//   return app
+//     .callFunction({
+//       name: 'deleteAgent',
+//       data: { agentId },
+//     })
+//     .then((res) => {
+//       const { result } = res || {}
+//       if (!result || result.code !== 0) {
+//         return Promise.reject(new Error(result?.message || '删除代理失败'))
+//       }
+//       return { data: result.data }
+//     })
+// }
+
+/**
+ * 获取设备列表（用于分配设备弹窗）
+ * @param {Object} params
+ * @param {Number} params.page
+ * @param {Number} params.limit
+ * @param {String} params.name
+ * @param {String} params.mac_address
+ */
+export function getDeviceList({ page = 1, limit = 5, searchQuery = '', name = '', mac_address = '' } = {}) {
   return app
     .callFunction({
-      name: 'deleteAgent',
-      data: { agentId },
+      name: 'getDeviceList',
+      data: { page, limit, searchQuery, name, mac_address },
     })
     .then((res) => {
       const { result } = res || {}
       if (!result || result.code !== 0) {
-        return Promise.reject(new Error(result?.message || '删除代理失败'))
+        return Promise.reject(new Error(result?.message || '获取设备列表失败'))
       }
-      return { data: result.data }
+      // 兼容云函数返回结构
+      return { data: result.data && result.data.list ? result.data.list : result.data || [] }
     })
 }

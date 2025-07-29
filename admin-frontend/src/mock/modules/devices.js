@@ -15,7 +15,7 @@ for (let i = 0; i < total; i++) {
       mac_address: randomMac(),
       name: `AC-Master-${Mock.Random.string('number', 4)}`,
       total_records: Mock.Random.integer(0, 1000),
-    })
+    }),
   )
 }
 

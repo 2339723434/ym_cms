@@ -7,46 +7,41 @@
                 <span class="loading-text">加载中，请稍候...</span>
             </div>
         </div>
-        
+
         <!-- 搜索区域 -->
         <div class="search-section" v-show="!loading">
             <el-card class="search-card">
                 <div class="search-form">
-                    <el-input
-                        v-model="searchQuery"
-                        placeholder="搜索设备名称或MAC地址"
-                        prefix-icon="el-icon-search"
-                        clearable
-                        class="search-input"
-                        @keyup.enter.native="handleSearch"
-                        @clear="handleClearSearch">
+                    <el-input v-model="searchQuery" placeholder="搜索设备名称或MAC地址" prefix-icon="el-icon-search" clearable
+                        class="search-input" @keyup.enter.native="handleSearch" @clear="handleClearSearch">
                     </el-input>
                     <el-button type="primary" icon="el-icon-search" @click="handleSearch" class="search-btn">
                         搜索
                     </el-button>
-                    <el-button v-if="isSearching" @click="handleClearSearch" class="clear-btn">
+                    <el-button v-if="searchQuery" @click="handleClearSearch" class="clear-btn">
                         清空
                     </el-button>
                 </div>
-                <div v-if="isSearching" class="search-result-info">
-                    <span>搜索 "{{ searchQuery }}" 找到 {{ filteredDevices.length }} 个结果</span>
+                <div v-if="searchQuery" class="search-result-info">
+                    <span>搜索 "{{ searchQuery }}" 找到 {{ total }} 个结果</span>
                 </div>
             </el-card>
         </div>
 
         <div class="content my_scrollbar" v-show="!loading">
             <!-- 无搜索结果提示 -->
-            <div v-if="isSearching && filteredDevices.length === 0" class="no-results">
+            <div v-if="searchQuery && list.length === 0" class="no-results">
                 <div class="no-results-content">
                     <i class="el-icon-search no-results-icon"></i>
                     <p class="no-results-text">未找到匹配的设备</p>
-                    <p class="no-results-tip">请尝试其他关键词或<el-button type="text" @click="handleClearSearch">清空搜索条件</el-button></p>
+                    <p class="no-results-tip">请尝试其他关键词或<el-button type="text"
+                            @click="handleClearSearch">清空搜索条件</el-button></p>
                 </div>
             </div>
-            
+
             <!-- 设备列表 -->
             <el-row gutter="30" v-else>
-                <el-col v-for="(device, index) in pagedDevices" :key="device._id" :xs="12" :sm="8" :md="6" :lg="4" :xl="4"
+                <el-col v-for="(device, index) in list" :key="device._id" :xs="12" :sm="8" :md="6" :lg="4" :xl="4"
                     class="device-card-wrapper">
                     <div class="device-card" @click="goDetail(device)">
                         <div class="card-header">
@@ -64,7 +59,7 @@
             </el-row>
         </div>
 
-        <div class="pagination-wrapper" v-show="!loading && filteredDevices.length > 0">
+        <div class="pagination-wrapper" v-show="!loading && total > 0">
             <el-pagination background layout="prev, pager, next" :page-size="pageSize" :current-page.sync="currentPage"
                 :total="total" @current-change="handlePageChange" />
         </div>
@@ -83,49 +78,10 @@ export default {
             pageSize: 30,
             loading: false,
             searchQuery: '',
-            isSearching: false,
-            originalList: [], // 保存原始数据用于搜索
         }
     },
     computed: {
-        filteredDevices() {
-            if (!this.isSearching || !this.searchQuery.trim()) {
-                return this.originalList
-            }
-            
-            const query = this.searchQuery.toLowerCase().trim()
-            return this.originalList.filter(device => {
-                const name = (device.name || '').toLowerCase()
-                const macAddress = (device.mac_address || '').toLowerCase()
-                
-                // 设备名称匹配
-                if (name.includes(query)) {
-                    return true
-                }
-                
-                // MAC地址匹配 - 支持多种格式
-                // 移除分隔符进行匹配
-                const cleanMac = macAddress.replace(/[:-]/g, '')
-                const cleanQuery = query.replace(/[:-]/g, '')
-                
-                // 直接匹配原格式
-                if (macAddress.includes(query)) {
-                    return true
-                }
-                
-                // 匹配清理后的格式
-                if (cleanMac.includes(cleanQuery)) {
-                    return true
-                }
-                
-                return false
-            })
-        },
-        pagedDevices() {
-            const startIndex = (this.currentPage - 1) * this.pageSize
-            const endIndex = startIndex + this.pageSize
-            return this.filteredDevices.slice(startIndex, endIndex)
-        },
+        // 移除filteredDevices、pagedDevices
     },
     methods: {
         formatDate(val) {
@@ -134,21 +90,22 @@ export default {
             return date.toLocaleString()
         },
         goDetail(device) {
-            // 跳转时仅携带 id，设备数据写入 Vuex，详情页自行读取或请求
-            this.$router.push({ path: '/devices/detail', query: { id: device._id } })
+            this.$router.push({
+                name: 'DeviceDetail',
+                params: { deviceData: device },
+                query: { id: device._id }
+            })
         },
         async fetchDevices(page = 1) {
-            // 保持 loading 状态
+            this.loading = true
             try {
-                const resp = await getDeviceList(1, 9999) // 获取所有数据用于前端搜索
+                const resp = await getDeviceList(page, this.pageSize, this.searchQuery)
                 const { data } = resp
-                this.originalList = data.list || []
-                this.list = this.originalList
-                
-                // 缓存到 Vuex，供详情页读取
-                this.$store.dispatch('device/setDeviceList', this.originalList)
+                this.list = data.list || []
+                this.total = data.total || 0
                 this.currentPage = page
-                this.updatePaginationData()
+                // 缓存到 Vuex，供详情页读取
+                this.$store.dispatch('device/setDeviceList', this.list)
             } catch (e) {
                 console.error(e)
             } finally {
@@ -156,41 +113,24 @@ export default {
             }
         },
         handleSearch() {
-            if (!this.searchQuery.trim()) {
-                this.handleClearSearch()
-                return
-            }
-            this.isSearching = true
             this.currentPage = 1
-            this.updatePaginationData()
+            this.fetchDevices(1)
         },
         handleClearSearch() {
             this.searchQuery = ''
-            this.isSearching = false
             this.currentPage = 1
-            this.updatePaginationData()
-        },
-        updatePaginationData() {
-            this.total = this.filteredDevices.length
+            this.fetchDevices(1)
         },
         handlePageChange(page) {
             this.currentPage = page
+            this.fetchDevices(page)
         },
     },
     created() {
-        // 全局 loading
-        this.loading = true
-        updateDeviceUsage()
-            .catch((e) => console.error('update usage fail', e))
-            .finally(() => this.fetchDevices())
+        this.fetchDevices()
     },
     watch: {
-        searchQuery(newVal) {
-            // 当搜索框内容变化时，如果为空则自动清空搜索
-            if (!newVal.trim() && this.isSearching) {
-                this.handleClearSearch()
-            }
-        }
+        // 移除searchQuery的watch
     }
 }
 </script>
